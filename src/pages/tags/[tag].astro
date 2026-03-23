@@ -1,0 +1,73 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { PostList } from '../../components/react/PostCard';
+import {
+  getPublishedPosts,
+  getTags,
+  getPostsByTag,
+  getTagNameBySlug,
+  type TagInfo,
+} from '../../utils/posts';
+import { Tag as TagIcon, ArrowLeft } from 'lucide-react';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const tags = getTags(posts);
+
+  return tags.map((tag: TagInfo) => ({
+    params: { tag: tag.slug },
+    props: { tagSlug: tag.slug },
+  }));
+}
+
+interface Props {
+  tagSlug: string;
+}
+
+const { tagSlug } = Astro.props;
+const posts = await getPublishedPosts();
+const tags = getTags(posts);
+const tagName = getTagNameBySlug(tags, tagSlug);
+const tagPosts = getPostsByTag(posts, tagSlug);
+---
+
+<Layout title={`标签: ${tagName}`}>
+  <div class="py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Back link -->
+      <a
+        href="/tags"
+        class="inline-flex items-center gap-2 text-sm text-slate-500 
+          hover:text-slate-700 transition-colors duration-200 mb-8 cursor-pointer"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        所有标签
+      </a>
+
+      <!-- Header -->
+      <header class="mb-12">
+        <div
+          class="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50
+          flex items-center justify-center mb-6"
+        >
+          <TagIcon className="w-8 h-8 text-slate-500" />
+        </div>
+
+        <h1 class="text-3xl font-bold text-slate-900 mb-2">#{tagName}</h1>
+
+        <p class="text-slate-500">共 {tagPosts.length} 篇文章</p>
+      </header>
+
+      <!-- Posts list -->
+      {
+        tagPosts.length > 0 ? (
+          <PostList posts={tagPosts} client:load />
+        ) : (
+          <div class="text-center py-20">
+            <p class="text-slate-400">该标签下暂无文章</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

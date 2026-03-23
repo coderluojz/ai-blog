@@ -1,0 +1,85 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Timeline } from '../../components/react/TimelineItem';
+import { getPublishedPosts, groupPostsByTimeline } from '../../utils/posts';
+import { Archive, Calendar } from 'lucide-react';
+
+const posts = await getPublishedPosts();
+const timeline = groupPostsByTimeline(posts);
+
+// Calculate stats for display
+const totalPosts = posts.length;
+const yearsCount = timeline.length;
+---
+
+<Layout title="时间线归档">
+  <div class="py-12 px-4">
+    <div class="max-w-3xl mx-auto">
+      <!-- Header -->
+      <header class="mb-12 text-center">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+          bg-slate-100 text-slate-600 text-sm mb-6"
+        >
+          <Archive className="w-4 h-4" />
+          <span>Archives</span>
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          时间线归档
+        </h1>
+
+        <p class="text-slate-500">
+          共 {totalPosts} 篇文章，跨越 {yearsCount} 年
+        </p>
+      </header>
+
+      <!-- Year Navigation -->
+      <nav class="mb-12 p-4 rounded-xl bg-slate-50 border border-slate-100">
+        <div class="flex items-center gap-2 text-sm text-slate-500 mb-3">
+          <Calendar className="w-4 h-4" />
+          <span>快速跳转</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          {
+            timeline.map((item) => (
+              <a
+                href={`#year-${item.year}`}
+                class="px-3 py-1.5 rounded-lg text-sm font-medium
+                bg-white border border-slate-200 text-slate-600
+                hover:bg-slate-100 hover:border-slate-300
+                transition-all duration-200 cursor-pointer"
+              >
+                {item.year}
+                <span class="ml-1 text-xs text-slate-400">
+                  {item.months.reduce((acc, m) => acc + m.posts.length, 0)}
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </nav>
+
+      <!-- Timeline -->
+      <div class="relative">
+        {
+          timeline.map((item) => (
+            <div id={`year-${item.year}`}>
+              <Timeline items={[item]} client:load />
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Empty state -->
+      {
+        timeline.length === 0 && (
+          <div class="text-center py-20">
+            <Archive className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <p class="text-slate-400">暂无文章</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

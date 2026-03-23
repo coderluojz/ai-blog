@@ -1,0 +1,46 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { TagCloud } from '../../components/react/Tag';
+import { getPublishedPosts, getTags } from '../../utils/posts';
+import { Tag } from 'lucide-react';
+
+const posts = await getPublishedPosts();
+const tags = getTags(posts);
+---
+
+<Layout title="标签">
+  <div class="py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <header class="mb-12 text-center">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+          bg-slate-100 text-slate-600 text-sm mb-6"
+        >
+          <Tag className="w-4 h-4" />
+          <span>Tags</span>
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          标签云
+        </h1>
+
+        <p class="text-slate-500">共 {tags.length} 个标签</p>
+      </header>
+
+      <!-- Tag Cloud -->
+      {
+        tags.length > 0 ? (
+          <div class="flex justify-center">
+            <TagCloud tags={tags} client:load />
+          </div>
+        ) : (
+          <div class="text-center py-20">
+            <Tag className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <p class="text-slate-400">暂无标签</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

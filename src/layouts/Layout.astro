@@ -1,0 +1,49 @@
+---
+import '../styles/global.css';
+import { FloatingNav } from '../components/react/FloatingNav';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = '极简技术博客 - AI 与前端工程化的深度探索',
+  ogImage,
+} = Astro.props;
+
+const siteTitle = title ? `${title} | AI Blog` : 'AI Blog';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{siteTitle}</title>
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content={siteTitle} />
+    <meta property="og:description" content={description} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:type" content="website" />
+    
+    <!-- Preload fonts -->
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      as="style"
+    />
+  </head>
+  <body class="min-h-screen">
+    <FloatingNav client:load />
+    <main class="pt-14">
+      <slot />
+    </main>
+  </body>
+</html>

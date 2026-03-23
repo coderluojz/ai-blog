@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { FlaskConical, ExternalLink } from 'lucide-react';
+
+interface LabProject {
+  title: string;
+  description: string;
+  tags: string[];
+  status: 'active' | 'beta' | 'planned';
+  url?: string;
+}
+
+const labProjects: LabProject[] = [
+  {
+    title: 'LangChain 可视化',
+    description: '探索 LangChain 链式调用的可视化方案，直观展示 AI 推理过程',
+    tags: ['LangChain', 'React Flow', 'AI'],
+    status: 'active',
+  },
+  {
+    title: '实时 AI 聊天',
+    description: '基于 Server-Sent Events 的流式 AI 对话界面实现',
+    tags: ['SSE', 'React', 'OpenAI'],
+    status: 'beta',
+  },
+  {
+    title: '向量数据库检索',
+    description: 'RAG 应用中的向量检索演示与性能对比',
+    tags: ['Pinecone', 'Embeddings', 'RAG'],
+    status: 'planned',
+  },
+];
+
+const statusColors = {
+  active: 'bg-emerald-100 text-emerald-700',
+  beta: 'bg-amber-100 text-amber-700',
+  planned: 'bg-slate-100 text-slate-500',
+};
+
+const statusLabels = {
+  active: '运行中',
+  beta: '测试版',
+  planned: '计划中',
+};
+---
+
+<Layout title="技术实验室">
+  <div class="py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <header class="mb-12 text-center">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+          bg-slate-100 text-slate-600 text-sm mb-6"
+        >
+          <FlaskConical className="w-4 h-4" />
+          <span>Lab</span>
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          技术实验室
+        </h1>
+
+        <p class="text-slate-500 max-w-2xl mx-auto">
+          这里是 AI 全栈项目和复杂 React 交互的实验场，探索前沿技术的可能性
+        </p>
+      </header>
+
+      <!-- Projects Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          labProjects.map((project) => (
+            <div
+              class="p-6 rounded-xl border border-slate-100 bg-white
+              hover:shadow-lg hover:border-slate-200
+              transition-all duration-300 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between mb-4">
+                <span
+                  class={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[project.status]}`}
+                >
+                  {statusLabels[project.status]}
+                </span>
+                {project.url && (
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
+
+              <h3
+                class="text-lg font-semibold text-slate-800 mb-2 
+                group-hover:text-slate-600 transition-colors"
+              >
+                {project.title}
+              </h3>
+
+              <p class="text-sm text-slate-500 mb-4">{project.description}</p>
+
+              <div class="flex flex-wrap gap-2">
+                {project.tags.map((tag) => (
+                  <span class="text-xs px-2 py-1 rounded-full bg-slate-50 text-slate-500">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Coming soon -->
+      <div class="mt-16 text-center">
+        <div
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl
+          border border-dashed border-slate-200 text-slate-400 text-sm"
+        >
+          更多实验项目即将上线...
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

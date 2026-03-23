@@ -1,0 +1,143 @@
+---
+title: 'LangChain 入门：构建 AI 应用的利器'
+description: '介绍 LangChain 框架的核心概念和使用方法，包括 Chain、Agent、Memory 等核心组件'
+pubDate: 2025-08-20
+category: 'AI'
+tags: ['LangChain', 'LLM', 'AI Agent', 'RAG']
+aiSummary: '本文介绍 LangChain 框架的基础知识，包括 LLM 调用、链式处理、Agent 构建、Memory 管理等核心概念，适合 AI 应用开发者入门学习。'
+---
+
+# LangChain 入门：构建 AI 应用的利器
+
+LangChain 是一个用于构建 LLM 应用的框架，它提供了丰富的组件和工具。
+
+## 核心概念
+
+### 1. Models
+
+LangChain 支持多种 LLM 提供商：
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+
+# OpenAI
+llm = ChatOpenAI(model="gpt-4")
+
+# Anthropic
+llm = ChatAnthropic(model="claude-3-opus")
+```
+
+### 2. Prompts
+
+模板化的提示词管理：
+
+```python
+from langchain_core.prompts import ChatPromptTemplate
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "你是一个有帮助的助手"),
+    ("human", "{input}"),
+])
+```
+
+### 3. Chains
+
+链式组合多个组件：
+
+```python
+from langchain_core.output_parsers import StrOutputParser
+
+chain = prompt | llm | StrOutputParser()
+result = chain.invoke({"input": "什么是 LangChain?"})
+```
+
+### 4. Memory
+
+管理对话历史：
+
+```python
+from langchain.memory import ConversationBufferMemory
+
+memory = ConversationBufferMemory()
+memory.save_context(
+    {"input": "你好"},
+    {"output": "你好！有什么可以帮助你的吗？"}
+)
+```
+
+## 构建 RAG 应用
+
+### 文档加载与分割
+
+```python
+from langchain_community.document_loaders import TextLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+loader = TextLoader("document.txt")
+documents = loader.load()
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200,
+)
+chunks = splitter.split_documents(documents)
+```
+
+### 向量存储
+
+```python
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+
+embeddings = OpenAIEmbeddings()
+vectorstore = FAISS.from_documents(chunks, embeddings)
+
+# 检索
+docs = vectorstore.similarity_search("查询内容", k=3)
+```
+
+### 检索链
+
+```python
+from langchain.chains import RetrievalQA
+
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    retriever=vectorstore.as_retriever(),
+    return_source_documents=True,
+)
+
+result = qa_chain.invoke({"query": "问题内容"})
+```
+
+## Agent 构建
+
+```python
+from langchain.agents import AgentExecutor, create_openai_tools_agent
+from langchain_core.tools import Tool
+
+tools = [
+    Tool(
+        name="Search",
+        func=search_function,
+        description="用于搜索信息",
+    ),
+]
+
+agent = create_openai_tools_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools)
+
+result = agent_executor.invoke({"input": "搜索今天的新闻"})
+```
+
+## 最佳实践
+
+1. **合理使用 Memory**：根据场景选择合适的 Memory 类型
+2. **优化 Chunk 大小**：根据文档特点调整分割策略
+3. **错误处理**：添加适当的重试和超时机制
+4. **成本控制**：监控 Token 使用量
+
+## 总结
+
+LangChain 为 LLM 应用开发提供了强大的基础设施，掌握其核心概念可以快速构建复杂的 AI 应用。

@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { CategoryGrid } from '../../components/react/CategoryCard';
+import { getPublishedPosts, getCategories } from '../../utils/posts';
+import { FolderOpen } from 'lucide-react';
+
+const posts = await getPublishedPosts();
+const categories = getCategories(posts);
+---
+
+<Layout title="文章分类">
+  <div class="py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <header class="mb-12 text-center">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+          bg-slate-100 text-slate-600 text-sm mb-6"
+        >
+          <FolderOpen className="w-4 h-4" />
+          <span>Categories</span>
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          文章分类
+        </h1>
+
+        <p class="text-slate-500">共 {categories.length} 个分类</p>
+      </header>
+
+      <!-- Categories Grid -->
+      {
+        categories.length > 0 ? (
+          <CategoryGrid categories={categories} client:load />
+        ) : (
+          <div class="text-center py-20">
+            <FolderOpen className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <p class="text-slate-400">暂无分类</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,161 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { TableOfContents } from '../../components/react/TableOfContents';
+import { Tag } from '../../components/react/Tag';
+import { PostCard } from '../../components/react/PostCard';
+import {
+  formatDate,
+  fromNow,
+  getRelatedPosts,
+  getPublishedPosts,
+} from '../../utils/posts';
+import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await post.render();
+
+const allPosts = await getPublishedPosts();
+const relatedPosts = getRelatedPosts(post, allPosts, 3);
+
+const readingTime = Math.max(1, Math.ceil(post.body.length / 1000));
+
+interface TocItem {
+  id: string;
+  text: string;
+  depth: number;
+}
+
+const tocItems: TocItem[] = headings.map((h) => ({
+  id: h.slug,
+  text: h.text,
+  depth: h.depth,
+}));
+---
+
+<Layout title={post.data.title} description={post.data.description}>
+  <article class="py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+      <!-- Back button -->
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 text-sm text-slate-500 
+          hover:text-slate-700 transition-colors duration-200 mb-8 cursor-pointer"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        返回首页
+      </a>
+
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_250px] gap-12">
+        <!-- Main content -->
+        <div class="min-w-0">
+          <!-- Article header -->
+          <header class="mb-10">
+            <div class="flex items-center gap-3 mb-4">
+              <a
+                href={`/categories/${post.data.category.toLowerCase().replace(/\s+/g, '-')}`}
+                class="px-3 py-1 rounded-full text-sm font-medium
+                  bg-slate-100 text-slate-600 hover:bg-slate-200
+                  transition-colors duration-200 cursor-pointer"
+              >
+                {post.data.category}
+              </a>
+            </div>
+
+            <h1
+              class="text-3xl md:text-4xl font-bold text-slate-900 mb-4 leading-tight"
+            >
+              {post.data.title}
+            </h1>
+
+            <p class="text-lg text-slate-500 mb-6">{post.data.description}</p>
+
+            <div class="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+              <div class="flex items-center gap-1.5">
+                <Calendar className="w-4 h-4" />
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {formatDate(post.data.pubDate, 'YYYY年MM月DD日')}
+                </time>
+                <span class="text-slate-300">·</span>
+                <span>{fromNow(post.data.pubDate)}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <Clock className="w-4 h-4" />
+                <span>{readingTime} 分钟阅读</span>
+              </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2 mt-6">
+              {post.data.tags.map((tag) => (
+                <Tag
+                  name={tag}
+                  slug={tag.toLowerCase().replace(/\s+/g, '-')}
+                  href={`/tags/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                  size="sm"
+                  client:load
+                />
+              ))}
+            </div>
+          </header>
+
+          <!-- AI Summary -->
+          {post.data.aiSummary && (
+            <div
+              class="p-4 rounded-xl bg-slate-50 border border-slate-100 mb-8"
+            >
+              <div class="flex items-center gap-2 text-sm font-medium text-slate-600 mb-2">
+                <span class="text-lg">🤖</span>
+                AI 摘要
+              </div>
+              <p class="text-sm text-slate-500">{post.data.aiSummary}</p>
+            </div>
+          )}
+
+          <!-- Article content -->
+          <div class="prose-content">
+            <Content />
+          </div>
+
+          <!-- Related posts -->
+          {relatedPosts.length > 0 && (
+            <section class="mt-16 pt-8 border-t border-slate-100">
+              <h2 class="text-xl font-bold text-slate-800 mb-6">相关文章</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {relatedPosts.map((relatedPost, index) => (
+                  <PostCard
+                    title={relatedPost.data.title}
+                    description={relatedPost.data.description}
+                    pubDate={relatedPost.data.pubDate}
+                    category={relatedPost.data.category}
+                    tags={relatedPost.data.tags}
+                    slug={relatedPost.slug}
+                    index={index}
+                    client:load
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <!-- Sidebar TOC -->
+        <aside class="hidden lg:block">
+          <TableOfContents headings={tocItems} client:load />
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>

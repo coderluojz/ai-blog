@@ -1,0 +1,144 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { PostList } from '../components/react/PostCard';
+import { getPublishedPosts, getCategories, getTags } from '../utils/posts';
+import { ArrowRight, Sparkles, Code2, Brain } from 'lucide-react';
+
+const posts = await getPublishedPosts();
+const categories = getCategories(posts);
+const tags = getTags(posts);
+const latestPosts = posts.slice(0, 6);
+---
+
+<Layout title="首页">
+  <!-- Hero Section -->
+  <section class="relative py-20 px-4 overflow-hidden">
+    <!-- Background gradient -->
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 -z-10"
+    >
+    </div>
+
+    <div class="max-w-4xl mx-auto text-center">
+      <div
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 text-slate-600 text-sm mb-8"
+      >
+        <Sparkles className="w-4 h-4" />
+        <span>AI & Frontend Engineering</span>
+      </div>
+
+      <h1
+        class="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight"
+      >
+        探索技术的
+        <span
+          class="bg-gradient-to-r from-slate-700 to-slate-500 bg-clip-text text-transparent"
+        >
+          无限可能
+        </span>
+      </h1>
+
+      <p class="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto">
+        专注于前端工程化与 AI 技术的深度探索，分享实践经验与思考
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="/archives"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl
+            bg-slate-800 text-white font-medium
+            hover:bg-slate-700 transition-colors duration-200 cursor-pointer"
+        >
+          浏览文章
+          <ArrowRight className="w-4 h-4" />
+        </a>
+        <a
+          href="/lab"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl
+            border border-slate-200 text-slate-700 font-medium
+            hover:bg-slate-50 transition-colors duration-200 cursor-pointer"
+        >
+          <Code2 className="w-4 h-4" />
+          技术实验室
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-12 px-4 border-y border-slate-100">
+    <div class="max-w-4xl mx-auto">
+      <div class="grid grid-cols-3 gap-8 text-center">
+        <div>
+          <div class="text-3xl font-bold text-slate-800">{posts.length}</div>
+          <div class="text-sm text-slate-500 mt-1">篇文章</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-slate-800">
+            {categories.length}
+          </div>
+          <div class="text-sm text-slate-500 mt-1">个分类</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-slate-800">{tags.length}</div>
+          <div class="text-sm text-slate-500 mt-1">个标签</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Posts Section -->
+  <section class="py-16 px-4">
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-3">
+          <Brain className="w-5 h-5 text-slate-400" />
+          <h2 class="text-2xl font-bold text-slate-800">最新文章</h2>
+        </div>
+        <a
+          href="/archives"
+          class="text-sm text-slate-500 hover:text-slate-700 
+            transition-colors duration-200 flex items-center gap-1 cursor-pointer"
+        >
+          查看全部
+          <ArrowRight className="w-4 h-4" />
+        </a>
+      </div>
+
+      {
+        latestPosts.length > 0 ? (
+          <PostList posts={latestPosts} client:load />
+        ) : (
+          <div class="text-center py-20">
+            <p class="text-slate-400">暂无文章，敬请期待...</p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Categories Preview -->
+  <section class="py-16 px-4 bg-slate-50">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-slate-800 mb-8 text-center">
+        热门分类
+      </h2>
+
+      <div class="flex flex-wrap justify-center gap-3">
+        {
+          categories.slice(0, 6).map((cat) => (
+            <a
+              href={`/categories/${cat.slug}`}
+              class="px-4 py-2 rounded-lg bg-white border border-slate-200
+              text-slate-600 hover:border-slate-300 hover:bg-slate-50
+              transition-all duration-200 cursor-pointer"
+            >
+              {cat.name}
+              <span class="ml-2 text-xs text-slate-400">{cat.count}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,107 @@
+---
+title: 'React 18 并发特性深度解析'
+description: '探索 React 18 引入的并发渲染机制，包括 Suspense、useTransition、自动批处理等核心特性'
+pubDate: 2025-10-08
+category: 'React'
+tags: ['React', '并发渲染', 'Hooks', 'Suspense']
+aiSummary: '本文深入分析 React 18 的并发特性，包括并发渲染的工作原理、Suspense 的使用场景、useTransition 的优化技巧，以及自动批处理对性能的影响。'
+---
+
+# React 18 并发特性深度解析
+
+React 18 引入了并发渲染（Concurrent Rendering），这是 React 架构的重大升级。
+
+## 并发渲染原理
+
+并发渲染允许 React 同时准备多个版本的 UI：
+
+```jsx
+import { createRoot } from 'react-dom/client';
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+```
+
+## Suspense
+
+Suspense 允许声明式地加载异步内容：
+
+```jsx
+import { Suspense, lazy } from 'react';
+
+const LazyComponent = lazy(() => import('./HeavyComponent'));
+
+function App() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <LazyComponent />
+    </Suspense>
+  );
+}
+```
+
+## useTransition
+
+标记低优先级的状态更新：
+
+```jsx
+import { useTransition, useState } from 'react';
+
+function SearchResults() {
+  const [query, setQuery] = useState('');
+  const [isPending, startTransition] = useTransition();
+
+  function handleSearch(e) {
+    setQuery(e.target.value); // 高优先级
+
+    startTransition(() => {
+      updateSearchResults(e.target.value); // 低优先级
+    });
+  }
+
+  return (
+    <div>
+      <input onChange={handleSearch} />
+      {isPending ? <Spinner /> : <Results />}
+    </div>
+  );
+}
+```
+
+## 自动批处理
+
+React 18 自动批处理所有状态更新：
+
+```jsx
+function handleClick() {
+  setCount(c => c + 1);
+  setFlag(f => !f);
+  // 只会触发一次重渲染
+}
+```
+
+## useDeferredValue
+
+延迟非关键更新：
+
+```jsx
+import { useDeferredValue } from 'react';
+
+function SearchPage({ query }) {
+  const deferredQuery = useDeferredValue(query);
+
+  return (
+    <Results query={deferredQuery} />
+  );
+}
+```
+
+## 最佳实践
+
+1. **合理使用 Suspense**：在数据获取边界使用
+2. **useTransition 标记非紧急更新**：如搜索结果、过滤
+3. **避免过度并发**：不是所有更新都需要并发
+
+## 总结
+
+React 18 的并发特性为复杂应用的性能优化提供了新的工具，理解这些特性是现代 React 开发的必备技能。

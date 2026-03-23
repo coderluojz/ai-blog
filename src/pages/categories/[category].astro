@@ -1,0 +1,73 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { PostList } from '../../components/react/PostCard';
+import {
+  getPublishedPosts,
+  getCategories,
+  getPostsByCategory,
+  getCategoryNameBySlug,
+  type CategoryInfo,
+} from '../../utils/posts';
+import { FolderOpen, ArrowLeft } from 'lucide-react';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const categories = getCategories(posts);
+
+  return categories.map((category: CategoryInfo) => ({
+    params: { category: category.slug },
+    props: { categorySlug: category.slug },
+  }));
+}
+
+interface Props {
+  categorySlug: string;
+}
+
+const { categorySlug } = Astro.props;
+const posts = await getPublishedPosts();
+const categories = getCategories(posts);
+const categoryName = getCategoryNameBySlug(categories, categorySlug);
+const categoryPosts = getPostsByCategory(posts, categorySlug);
+---
+
+<Layout title={`分类: ${categoryName}`}>
+  <div class="py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Back link -->
+      <a
+        href="/categories"
+        class="inline-flex items-center gap-2 text-sm text-slate-500 
+          hover:text-slate-700 transition-colors duration-200 mb-8 cursor-pointer"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        所有分类
+      </a>
+
+      <!-- Header -->
+      <header class="mb-12">
+        <div
+          class="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50
+          flex items-center justify-center mb-6"
+        >
+          <FolderOpen className="w-8 h-8 text-slate-500" />
+        </div>
+
+        <h1 class="text-3xl font-bold text-slate-900 mb-2">{categoryName}</h1>
+
+        <p class="text-slate-500">共 {categoryPosts.length} 篇文章</p>
+      </header>
+
+      <!-- Posts list -->
+      {
+        categoryPosts.length > 0 ? (
+          <PostList posts={categoryPosts} client:load />
+        ) : (
+          <div class="text-center py-20">
+            <p class="text-slate-400">该分类下暂无文章</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

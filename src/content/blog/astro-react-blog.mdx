@@ -1,0 +1,96 @@
+---
+title: 'Astro + React 构建高性能技术博客'
+description: '从零开始使用 Astro 框架和 React 组件构建一个现代化的技术博客，实现极致的性能和优秀的开发体验'
+pubDate: 2025-12-15
+category: '前端工程'
+tags: ['Astro', 'React', 'TypeScript', 'SSG']
+aiSummary: '本文详细介绍了如何使用 Astro 框架配合 React 构建一个高性能的技术博客。内容涵盖项目初始化、内容集合配置、组件设计、动态路由生成等核心环节，展示了 Astro Islands 架构在静态站点中的优势。'
+---
+
+# Astro + React 构建高性能技术博客
+
+在现代前端开发中，选择合适的框架对于项目的成功至关重要。本文将分享我使用 Astro + React 构建技术博客的经验。
+
+## 为什么选择 Astro？
+
+Astro 是一个面向内容的 Web 框架，它的核心优势包括：
+
+1. **零 JavaScript 默认**：只在需要时加载 JavaScript
+2. **Islands 架构**：支持混合使用多个 UI 框架
+3. **出色的性能**：静态生成，极快的加载速度
+
+## 项目结构
+
+```
+src/
+├── content/
+│   ├── blog/          # MDX 文章
+│   └── config.ts      # 内容集合配置
+├── components/
+│   ├── react/         # React 岛屿组件
+│   └── astro/         # Astro 组件
+├── layouts/           # 布局组件
+├── pages/             # 页面路由
+└── utils/             # 工具函数
+```
+
+## 核心配置
+
+### Astro 配置
+
+```javascript
+import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
+import react from '@astrojs/react';
+import tailwind from '@astrojs/tailwind';
+
+export default defineConfig({
+  integrations: [
+    react(),
+    tailwind(),
+    mdx(),
+  ],
+  output: 'static',
+});
+```
+
+### 内容集合 Schema
+
+```typescript
+import { defineCollection, z } from 'astro:content';
+
+const blog = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    category: z.string(),
+    tags: z.array(z.string()),
+  }),
+});
+```
+
+## 组件设计
+
+### 岛屿组件的使用
+
+只在需要交互的地方使用 `client:load` 指令：
+
+```astro
+---
+import { Timeline } from '../components/react/TimelineItem';
+---
+
+<Timeline items={timelineData} client:load />
+```
+
+## 性能优化
+
+- 使用 `lodash-es` 按需导入
+- 图片使用 WebP 格式和懒加载
+- 利用 Astro 的静态生成优势
+
+## 总结
+
+Astro 是构建内容型网站的理想选择，配合 React 可以实现复杂的交互需求，同时保持出色的性能表现。
