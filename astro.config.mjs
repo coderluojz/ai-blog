@@ -5,6 +5,7 @@ import { defineConfig } from 'astro/config'
 
 export default defineConfig({
   site: 'https://coderluojz.github.io',
+  base: '/ai-blog',
   integrations: [
     react(),
     tailwind({

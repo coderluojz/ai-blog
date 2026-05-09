@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { BASE_PATH } from '../../utils/constants';
 
 interface TagProps {
   name: string;
@@ -48,7 +49,7 @@ interface TagCloudProps {
   baseUrl?: string;
 }
 
-export function TagCloud({ tags, baseUrl = '/tags' }: TagCloudProps) {
+export function TagCloud({ tags, baseUrl = `${BASE_PATH}/tags` }: TagCloudProps) {
   const maxCount = Math.max(...tags.map((t) => t.count));
 
   return (

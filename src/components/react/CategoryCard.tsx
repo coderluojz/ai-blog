@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FolderOpen, FileText } from 'lucide-react';
+import { BASE_PATH } from '../../utils/constants';
 
 interface CategoryCardProps {
   name: string;
@@ -16,7 +17,7 @@ export function CategoryCard({
 }: CategoryCardProps) {
   return (
     <motion.a
-      href={`/categories/${slug}`}
+      href={`${BASE_PATH}/categories/${slug}`}
       whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}

@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { FloatingNav } from '../components/react/FloatingNav';
+import { BASE_PATH } from '../utils/constants';
 
 interface Props {
   title: string;
@@ -23,7 +24,7 @@ const siteTitle = title ? `${title} | AI Blog` : 'AI Blog';
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE_PATH}/favicon.svg`} />
     <meta name="generator" content={Astro.generator} />
     <title>{siteTitle}</title>
     

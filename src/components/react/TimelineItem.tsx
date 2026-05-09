@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Calendar, ChevronRight } from 'lucide-react';
 import dayjs from 'dayjs';
+import { BASE_PATH } from '../../utils/constants';
 
 interface TimelinePost {
   slug: string;
@@ -70,7 +71,7 @@ export function TimelineItem({ year, months, index }: TimelineItemProps) {
               {month.posts.map((post, postIndex) => (
                 <motion.a
                   key={post.slug}
-                  href={`/blog/${post.slug}`}
+                  href={`${BASE_PATH}/blog/${post.slug}`}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}

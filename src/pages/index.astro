@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { PostList } from '../components/react/PostCard';
 import { getPublishedPosts, getCategories, getTags } from '../utils/posts';
 import { ArrowRight, Sparkles, Code2, Brain } from 'lucide-react';
+import { BASE_PATH } from '../utils/constants';
 
 const posts = await getPublishedPosts();
 const categories = getCategories(posts);
@@ -44,7 +45,7 @@ const latestPosts = posts.slice(0, 6);
 
       <div class="flex flex-wrap justify-center gap-4">
         <a
-          href="/archives"
+          href={`${BASE_PATH}/archives`}
           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl
             bg-slate-800 text-white font-medium
             hover:bg-slate-700 transition-colors duration-200 cursor-pointer"
@@ -53,7 +54,7 @@ const latestPosts = posts.slice(0, 6);
           <ArrowRight className="w-4 h-4" />
         </a>
         <a
-          href="/lab"
+          href={`${BASE_PATH}/lab`}
           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl
             border border-slate-200 text-slate-700 font-medium
             hover:bg-slate-50 transition-colors duration-200 cursor-pointer"
@@ -96,7 +97,7 @@ const latestPosts = posts.slice(0, 6);
           <h2 class="text-2xl font-bold text-slate-800">最新文章</h2>
         </div>
         <a
-          href="/archives"
+          href={`${BASE_PATH}/archives`}
           class="text-sm text-slate-500 hover:text-slate-700 
             transition-colors duration-200 flex items-center gap-1 cursor-pointer"
         >
@@ -128,7 +129,7 @@ const latestPosts = posts.slice(0, 6);
         {
           categories.slice(0, 6).map((cat) => (
             <a
-              href={`/categories/${cat.slug}`}
+              href={`${BASE_PATH}/categories/${cat.slug}`}
               class="px-4 py-2 rounded-lg bg-white border border-slate-200
               text-slate-600 hover:border-slate-300 hover:bg-slate-50
               transition-all duration-200 cursor-pointer"

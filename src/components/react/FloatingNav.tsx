@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Home, Archive, Tag, FolderOpen, FlaskConical, Search } from 'lucide-react';
+import { BASE_PATH } from '../../utils/constants';
 
 interface NavItem {
   href: string;
@@ -11,11 +12,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: '/', label: '首页', icon: <Home className="w-4 h-4" /> },
-  { href: '/archives', label: '归档', icon: <Archive className="w-4 h-4" /> },
-  { href: '/categories', label: '分类', icon: <FolderOpen className="w-4 h-4" /> },
-  { href: '/tags', label: '标签', icon: <Tag className="w-4 h-4" /> },
-  { href: '/lab', label: '实验室', icon: <FlaskConical className="w-4 h-4" /> },
+  { href: `${BASE_PATH}/`, label: '首页', icon: <Home className="w-4 h-4" /> },
+  { href: `${BASE_PATH}/archives`, label: '归档', icon: <Archive className="w-4 h-4" /> },
+  { href: `${BASE_PATH}/categories`, label: '分类', icon: <FolderOpen className="w-4 h-4" /> },
+  { href: `${BASE_PATH}/tags`, label: '标签', icon: <Tag className="w-4 h-4" /> },
+  { href: `${BASE_PATH}/lab`, label: '实验室', icon: <FlaskConical className="w-4 h-4" /> },
 ];
 
 export function FloatingNav() {
@@ -32,8 +33,9 @@ export function FloatingNav() {
 
   const isActive = (href: string) => {
     if (typeof window === 'undefined') return false;
-    if (href === '/') return window.location.pathname === '/';
-    return window.location.pathname.startsWith(href);
+    const { pathname } = window.location;
+    if (href === `${BASE_PATH}/`) return pathname === `${BASE_PATH}/` || pathname === `${BASE_PATH}`;
+    return pathname.startsWith(href);
   };
 
   return (
@@ -47,7 +49,7 @@ export function FloatingNav() {
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <a
-            href="/"
+            href={`${BASE_PATH}/`}
             className="flex items-center gap-2.5 group"
           >
             <span className="w-7 h-7 rounded-md bg-slate-900 flex items-center justify-center 
@@ -136,6 +138,7 @@ export function FloatingNav() {
                 </a>
               ))}
             </nav>
+
           </motion.div>
         )}
       </AnimatePresence>

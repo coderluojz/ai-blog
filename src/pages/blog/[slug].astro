@@ -11,6 +11,7 @@ import {
   getPublishedPosts,
 } from '../../utils/posts';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { BASE_PATH } from '../../utils/constants';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -50,7 +51,7 @@ const tocItems: TocItem[] = headings.map((h) => ({
     <div class="max-w-6xl mx-auto">
       <!-- Back button -->
       <a
-        href="/"
+        href={`${BASE_PATH}/`}
         class="inline-flex items-center gap-2 text-sm text-slate-500 
           hover:text-slate-700 transition-colors duration-200 mb-8 cursor-pointer"
       >
@@ -65,7 +66,7 @@ const tocItems: TocItem[] = headings.map((h) => ({
           <header class="mb-10">
             <div class="flex items-center gap-3 mb-4">
               <a
-                href={`/categories/${post.data.category.toLowerCase().replace(/\s+/g, '-')}`}
+                href={`${BASE_PATH}/categories/${post.data.category.toLowerCase().replace(/\s+/g, '-')}`}
                 class="px-3 py-1 rounded-full text-sm font-medium
                   bg-slate-100 text-slate-600 hover:bg-slate-200
                   transition-colors duration-200 cursor-pointer"
@@ -103,7 +104,7 @@ const tocItems: TocItem[] = headings.map((h) => ({
                 <Tag
                   name={tag}
                   slug={tag.toLowerCase().replace(/\s+/g, '-')}
-                  href={`/tags/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                  href={`${BASE_PATH}/tags/${tag.toLowerCase().replace(/\s+/g, '-')}`}
                   size="sm"
                   client:load
                 />
